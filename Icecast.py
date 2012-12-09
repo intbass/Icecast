@@ -77,23 +77,22 @@ class IcecastMount:
 	    raise
         # Populate the Listeners list for this mount
         #for mount in self.ListenerStats.iter('source'):
-        for listener in mount.iter('listener'):
+        for listener in self.ListenerStats.iter('listener'):
             self.Listeners.append(IcecastListener(listener))
         # Miscellaneous Information
-        # this doesn't work just yet
-        self.Artist                 = self.IceStats.find('artist').text
+        #self.Artist                 = self.IceStats.find('artist').text
         #self.AudioCodecID           = self.IceStats.find('self.audio_codecid').text
         self.AudioInfo              = self.IceStats.find('audio_info').text
-        self.Connected              = self.IceStats.find('connected').text
+        #self.Connected              = self.IceStats.find('connected').text
         self.Genre                  = self.IceStats.find('genre').text
-        self.IncomingBitrate        = self.IceStats.find('incoming_bitrate').text
-        self.ListenerConnections    = self.IceStats.find('listener_connections').text
+        #self.IncomingBitrate        = self.IceStats.find('incoming_bitrate').text
+        #self.ListenerConnections    = self.IceStats.find('listener_connections').text
         self.ListenerCount          = self.IceStats.find('listeners').text
         self.ListenerPeak           = self.IceStats.find('listener_peak').text
         self.ListenURL              = self.IceStats.find('listenurl').text
         self.MaxListeners           = self.IceStats.find('max_listeners').text
-        self.MetadataUpdated        = self.IceStats.find('metadata_updated').text
-        self.OutgoingKbitRate       = self.IceStats.find('outgoing_kbitrate').text
+        #self.MetadataUpdated        = self.IceStats.find('metadata_updated').text
+        #self.OutgoingKbitRate       = self.IceStats.find('outgoing_kbitrate').text
         self.Public                 = self.IceStats.find('public').text
         self.ServerDescription      = self.IceStats.find('server_description').text
         self.ServerName             = self.IceStats.find('server_name').text
@@ -105,7 +104,7 @@ class IcecastMount:
         self.Title                  = self.IceStats.find('title').text
         self.TotalBytesRead         = self.IceStats.find('total_bytes_read').text
         self.TotalBytesSent         = self.IceStats.find('total_bytes_sent').text
-        self.TotalMBytesSent        = self.IceStats.find('total_mbytes_sent').text
+        #self.TotalMBytesSent        = self.IceStats.find('total_mbytes_sent').text
         self.UserAgent              = self.IceStats.find('user_agent').text
 
 class IcecastListener:
