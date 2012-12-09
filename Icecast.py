@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import xml.etree.ElementTree as ET
 import requests
@@ -26,12 +26,14 @@ class IcecastServer:
         try:
             self.IceStats = ET.fromstring(req.text)
         except:
-            print (req.text)
+            #print (req.text)
             print ("Some error parsing xml")
             raise
         # this server has mount points, go get their data too
+	print ( self.IceStats.iter('source'))
         for mount in self.IceStats.iter('source'):
-            self.Mounts.append(IcecastMount(mount.get('mount'),self)) 
+	    print (str(mount.attrib))
+            self.Mounts.append(IcecastMount(mount,self)) 
         # Misc attributes
         self.Admin                  = self.IceStats.find('admin').text
         #self.BannedIPs              = self.IceStats.find('banned_ips').text
@@ -57,50 +59,54 @@ class IcecastServer:
 
 class IcecastMount:
     """Details pertaining to an Icecast Mount."""
-    def __init__(self, name, server):
-        self.Name = name
+    def __init__(self, mount, server):
+        self.IceStats = mount
         self.Server = server
         self.Listeners = []
+	self.Name = self.IceStats.get('mount')
         try:
-            url = "http://" + server.Hostname + ":" + server.Port + "/admin/listclients?mount=" + name
+            url = "http://" + server.Hostname + ":" + server.Port + "/admin/listclients?mount=" + self.Name
             req = requests.get(url, auth=(server.UserName, server.Password),
                     headers=headers, timeout=httptimeout)
         except:
             print ("http error " + req.status_code + " reading " + url)
             raise
-        self.IceStats = ET.fromstring(req.text)
+        try:
+	    self.ListenerStats = ET.fromstring(req.text)
+	except:
+	    raise
         # Populate the Listeners list for this mount
-        for mount in self.IceStats.iter('source'):
-            for listener in mount.iter('listener'):
-                self.Listeners.append(IcecastListener(listener))
+        #for mount in self.ListenerStats.iter('source'):
+        for listener in mount.iter('listener'):
+            self.Listeners.append(IcecastListener(listener))
         # Miscellaneous Information
         # this doesn't work just yet
-        #self.Artist                 = self.IceStats.find('artist').text
+        self.Artist                 = self.IceStats.find('artist').text
         #self.AudioCodecID           = self.IceStats.find('self.audio_codecid').text
-        #self.AudioInfo              = self.IceStats.find('audio_info').text
-        #self.Connected              = self.IceStats.find('connected').text
-        #self.Genre                  = self.IceStats.find('genre').text
-        #self.IncomingBitrate        = self.IceStats.find('incoming_bitrate').text
-        #self.ListenerConnections    = self.IceStats.find('listener_connections').text
-        #self.ListenerPeak           = self.IceStats.find('listener_peak').text
-        #self.Listeners              = self.IceStats.find('listeners').text
-        #self.ListenURL              = self.IceStats.find('listenurl').text
-        #self.MaxListeners           = self.IceStats.find('max_listeners').text
-        #self.MetadataUpdated        = self.IceStats.find('metadata_updated').text
-        #self.OutgoingKbitRate       = self.IceStats.find('outgoing_kbitrate').text
-        #self.Public                 = self.IceStats.find('public').text
-        #self.ServerDescription      = self.IceStats.find('server_description').text
-        #self.ServerName             = self.IceStats.find('server_name').text
-        #self.ServerType             = self.IceStats.find('server_type').text
-        #self.ServerURL              = self.IceStats.find('server_url').text
-        #self.SlowListeners          = self.IceStats.find('slow_listeners').text
-        #self.SourceIP               = self.IceStats.find('source_ip').text
-        #self.StreamStart            = self.IceStats.find('stream_start').text
-        #self.Title                  = self.IceStats.find('title').text
-        #self.TotalBytesRead         = self.IceStats.find('total_bytes_read').text
-        #self.TotalBytesSent         = self.IceStats.find('total_bytes_sent').text
-        #self.TotalMBytesSent        = self.IceStats.find('total_mbytes_sent').text
-        #self.UserAgent              = self.IceStats.find('user_agent').text
+        self.AudioInfo              = self.IceStats.find('audio_info').text
+        self.Connected              = self.IceStats.find('connected').text
+        self.Genre                  = self.IceStats.find('genre').text
+        self.IncomingBitrate        = self.IceStats.find('incoming_bitrate').text
+        self.ListenerConnections    = self.IceStats.find('listener_connections').text
+        self.ListenerCount          = self.IceStats.find('listeners').text
+        self.ListenerPeak           = self.IceStats.find('listener_peak').text
+        self.ListenURL              = self.IceStats.find('listenurl').text
+        self.MaxListeners           = self.IceStats.find('max_listeners').text
+        self.MetadataUpdated        = self.IceStats.find('metadata_updated').text
+        self.OutgoingKbitRate       = self.IceStats.find('outgoing_kbitrate').text
+        self.Public                 = self.IceStats.find('public').text
+        self.ServerDescription      = self.IceStats.find('server_description').text
+        self.ServerName             = self.IceStats.find('server_name').text
+        self.ServerType             = self.IceStats.find('server_type').text
+        self.ServerURL              = self.IceStats.find('server_url').text
+        self.SlowListeners          = self.IceStats.find('slow_listeners').text
+        self.SourceIP               = self.IceStats.find('source_ip').text
+        self.StreamStart            = self.IceStats.find('stream_start').text
+        self.Title                  = self.IceStats.find('title').text
+        self.TotalBytesRead         = self.IceStats.find('total_bytes_read').text
+        self.TotalBytesSent         = self.IceStats.find('total_bytes_sent').text
+        self.TotalMBytesSent        = self.IceStats.find('total_mbytes_sent').text
+        self.UserAgent              = self.IceStats.find('user_agent').text
 
 class IcecastListener:
     """this is a class to contain the details of a listener."""
