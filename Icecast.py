@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 import xml.etree.ElementTree as ET
 import requests
@@ -16,13 +16,15 @@ class IcecastServer:
         self.UserName = username
         self.Password = password
         self.Mounts = []
+
+        url = "http://" + hostname + ":" + port + "/admin/stats.xml"
         try:
-            url = "http://" + hostname + ":" + port + "/admin/stats.xml"
             req = requests.get(url, auth=(username, password),
                     headers=headers, timeout=httptimeout)
         except:
             print ("http error", req.status_code, " reading ", url)
             raise
+
         try:
             self.IceStats = ET.fromstring(req.text)
         except:
@@ -30,10 +32,10 @@ class IcecastServer:
             print ("Some error parsing xml")
             raise
         # this server has mount points, go get their data too
-	print ( self.IceStats.iter('source'))
-        for mount in self.IceStats.iter('source'):
-	    print (str(mount.attrib))
-            self.Mounts.append(IcecastMount(mount,self)) 
+	    #print ( self.IceStats.iter('source'))
+        #for mount in self.IceStats.iter('source'):
+	    #print (str(mount.attrib))
+        #    self.Mounts.append(IcecastMount(mount,self)) 
         # Misc attributes
         self.Admin                  = self.IceStats.find('admin').text
         #self.BannedIPs              = self.IceStats.find('banned_ips').text
